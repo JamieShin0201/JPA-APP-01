@@ -19,13 +19,13 @@ public class MemberRepositoryTest {
     @Transactional
     public void testMember() {
         Member member = new Member();
-        member.setUsername("memberA");
+        member.setName("memberA");
         Long savedId = memberRepository.save(member);
 
         Member foundMember = memberRepository.find(savedId);
 
         assertThat(foundMember.getId()).isEqualTo(member.getId());
-        assertThat(foundMember.getUsername()).isEqualTo(member.getUsername());
+        assertThat(foundMember.getName()).isEqualTo(member.getName());
         assertThat(foundMember).isEqualTo(member);
     }
 }

@@ -50,8 +50,7 @@ public class ItemController {
 
     @PostMapping("/items/{itemId}/edit")
     public String updateItem(@ModelAttribute("form") BookForm form) {
-        Book book = form.toEntityWithId();
-        itemService.save(book);
+        itemService.updateItem(form);
 
         return "redirect:/items";
     }

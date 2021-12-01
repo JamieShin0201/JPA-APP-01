@@ -5,6 +5,10 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 @Repository
@@ -19,6 +23,34 @@ public class OrderQueryRepository {
             o.setOrderItems(orderItems);
         });
         return orders;
+    }
+
+    public List<OrderQueryDto> findAllByDtoOptimization() {
+        List<OrderQueryDto> orders = findOrders();
+        Map<Long, List<OrderItemQueryDto>> orderItemMap = findOrderItemMap(toOrderIds(orders));
+
+        orders.forEach(o -> o.setOrderItems(orderItemMap.get(o.getOrderId())));
+        return orders;
+    }
+
+    private List<Long> toOrderIds(List<OrderQueryDto> orders) {
+        return orders.stream()
+                .map(o -> o.getOrderId())
+                .collect(toList());
+    }
+
+    private Map<Long, List<OrderItemQueryDto>> findOrderItemMap(List<Long> orderIds) {
+        List<OrderItemQueryDto> orderItems = em.createQuery(
+                "select new jpabook.jpashop.repository.order.query.OrderItemQueryDto" +
+                        "(oi.order.id, i.name, oi.orderPrice, oi.count)" +
+                        " from OrderItem oi" +
+                        " join oi.item i" +
+                        " where oi.order.id in :orderIds", OrderItemQueryDto.class)
+                .setParameter("orderIds", orderIds)
+                .getResultList();
+
+        return orderItems.stream()
+                .collect(groupingBy(OrderItemQueryDto::getOrderId));
     }
 
     private List<OrderQueryDto> findOrders() {

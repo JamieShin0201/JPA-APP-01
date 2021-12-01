@@ -26,7 +26,7 @@ public class OrderSimpleApiController {
     @Bean
     Hibernate5Module hibernate5Module() {
         Hibernate5Module hibernate5Module = new Hibernate5Module();
-        hibernate5Module.configure(Hibernate5Module.Feature.FORCE_LAZY_LOADING, true);
+//        hibernate5Module.configure(Hibernate5Module.Feature.FORCE_LAZY_LOADING, true);
         return hibernate5Module;
     }
 
@@ -42,8 +42,8 @@ public class OrderSimpleApiController {
         List<Order> orders = orderRepository.findAll(new OrderSearch());
         for (Order order : orders) {
             // lazy 강제 초기화
-//            order.getMember().getName();
-//            order.getDelivery().getAddress();
+            order.getMember().getName();
+            order.getDelivery().getAddress();
         }
 
         return orders;
